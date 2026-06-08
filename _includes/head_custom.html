@@ -1,0 +1,50 @@
+<!-- Mermaid CDN — renderiza ```mermaid blocks automaticamente -->
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad: false, theme: 'default' });
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    // Cayman theme renderiza ```mermaid como <pre><code class="language-mermaid">
+    const blocks = document.querySelectorAll('pre code.language-mermaid');
+    blocks.forEach((block, i) => {
+      const div = document.createElement('div');
+      div.className = 'mermaid';
+      div.id = 'mermaid-' + i;
+      div.textContent = block.textContent;
+      block.parentElement.replaceWith(div);
+    });
+    await mermaid.run();
+  });
+</script>
+
+<style>
+  /* Container do mermaid centralizado */
+  .mermaid {
+    text-align: center;
+    margin: 2em 0;
+    background: #fafafa;
+    padding: 1em;
+    border-radius: 6px;
+    overflow-x: auto;
+  }
+  /* Tabelas responsivas */
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  table thead tr {
+    background: #f0f0f0;
+  }
+  /* Code blocks com syntax */
+  pre {
+    background: #f6f8fa;
+    border-radius: 6px;
+  }
+  /* TOC links cinza claro */
+  ul.toc {
+    background: #fafafa;
+    padding: 1em 2em;
+    border-left: 4px solid #159957;
+  }
+</style>

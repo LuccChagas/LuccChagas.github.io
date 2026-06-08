@@ -1,0 +1,27 @@
+title: Multi-Agent Workflow
+description: Fluxo de trabalho agnóstico com 4 instâncias Claude Code coordenadas via cmux
+theme: jekyll-theme-cayman
+markdown: kramdown
+kramdown:
+  input: GFM
+  hard_wrap: false
+  syntax_highlighter: rouge
+
+# Permalink e SEO
+url: https://luccchagas.github.io
+baseurl: ""
+
+# Footer e author
+author: Luccas Machado
+github_username: LuccChagas
+show_downloads: false
+
+# Garantir que index.md vira home page
+plugins:
+  - jekyll-relative-links
+relative_links:
+  enabled: true
+  collections: true
+include:
+  - CONTRIBUTING.md
+  - README.md
