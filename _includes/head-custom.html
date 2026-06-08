@@ -1,0 +1,49 @@
+<!-- Mermaid CDN — renderiza ```mermaid blocks automaticamente -->
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>
+  // Converte ```mermaid blocks (renderizados pelo Jekyll como <pre><code class="language-mermaid">)
+  // em <div class="mermaid"> que o mermaid.js renderiza.
+  document.addEventListener('DOMContentLoaded', function() {
+    var blocks = document.querySelectorAll('pre code.language-mermaid, code.language-mermaid');
+    blocks.forEach(function(block) {
+      var div = document.createElement('div');
+      div.className = 'mermaid';
+      div.textContent = block.textContent;
+      var parent = block.parentElement;
+      // Se o code está dentro de <pre>, substituir o <pre>; senão substituir o <code>
+      if (parent.tagName === 'PRE') {
+        parent.parentElement.replaceChild(div, parent);
+      } else {
+        parent.replaceChild(div, block);
+      }
+    });
+    if (window.mermaid) {
+      mermaid.initialize({ startOnLoad: false, theme: 'default', securityLevel: 'loose' });
+      mermaid.run({ querySelector: '.mermaid' });
+    }
+  });
+</script>
+
+<style>
+  /* Container do mermaid centralizado */
+  .mermaid {
+    text-align: center;
+    margin: 2em 0;
+    background: #fafafa;
+    padding: 1em;
+    border-radius: 6px;
+    overflow-x: auto;
+  }
+  /* Tabelas responsivas */
+  .main-content table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+    margin: 1em 0;
+  }
+  /* Code blocks com syntax */
+  pre {
+    background: #f6f8fa !important;
+    border-radius: 6px;
+  }
+</style>
