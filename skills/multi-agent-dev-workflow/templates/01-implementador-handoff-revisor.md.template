@@ -1,0 +1,56 @@
+---
+sprint: {{SPRINT}}
+fase: {{FASE}}
+seq: 01
+from: implementador
+to: revisor
+marker: HANDOFF IMPLEMENTADOR → REVISOR
+timestamp: {{ISO_8601}}
+branch: feature/sprint-{{SPRINT}}-{{SLUG}}
+commit: {{COMMIT_HASH}}
+---
+
+# Handoff Implementador → Revisor — Sprint {{SPRINT}} Fase {{FASE}}
+
+## Veredito
+
+| Check | Status | Tempo |
+|---|---|---|
+| `make lint` | ✅ | <Xs> |
+| `go build ./...` | ✅ | <Xs> |
+| Unit tests | ✅ | <Xs> |
+| Integration tests cumulative | ✅ | <Xs> |
+| Pre-commit hook Layer-1+2 | ✅ | inline |
+
+## Arquivos entregues
+
+### Backend
+- `apps/api/internal/...` — <descrição>
+
+### Frontend
+- `apps/web/src/...` — <descrição>
+
+### Migrations
+- `apps/api/migrations/NNN-<slug>.up.sql` — <descrição>
+- `apps/api/migrations/NNN-<slug>.down.sql` — <descrição>
+
+### ADRs novos
+- `docs/adr/NNN-<slug>.md` — <descrição da decisão>
+
+## Decisões cravadas runtime
+
+- **D{{N}}**: <decisão prévia humano cravada (ex: D2 short_id IMUTÁVEL)>
+- **Channel X**: <novo enum cravado se aplicável>
+- **State machine**: <transições cravadas runtime>
+
+## Patterns reuse cumulative
+
+| # | Pattern | Origem | Aplicação fase atual |
+|---|---|---|---|
+| {{N}} | <Pattern> | Sprint X Fase Y | <onde reaplicou> |
+
+## Próximo step
+
+Rev valida Fase {{FASE}} + autoriza Fase {{FASE+1}}.
+
+=== HANDOFF IMPLEMENTADOR → REVISOR ===

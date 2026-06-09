@@ -1,0 +1,81 @@
+---
+sprint: {{SPRINT}}
+fase: {{FASE}}
+seq: 03
+from: qa
+to: revisor
+marker: HANDOFF QA → REVISOR
+timestamp: {{ISO_8601}}
+branch: feature/sprint-{{SPRINT}}-{{SLUG}}
+commits: [{{COMMIT_HASHES}}]
+veredito: APROVADO TOTAL
+workflow_run_ids: [{{IDS_SE_USOU_WORKFLOW}}]
+---
+
+# Parecer QA Sprint {{SPRINT}} Fase {{FASE}}
+
+## Veredito
+
+**APROVADO TOTAL** em N/N itens da cascata. Wall-clock: <X>s.
+
+## Evidências por item
+
+### [1] Static checks (build + lint + gofmt clean)
+✅ PASS
+```bash
+$ make lint
+$ go build ./...
+```
+Output: <output cru — exit codes, mensagens>
+
+### [2] G* gate-check tests isolated
+✅ PASS K/K em <X>s
+```bash
+$ go test -tags=integration -run='TestG{{N}}_*'
+```
+Output: ...
+
+### [3] Integration full regression cumulative
+✅ PASS em <X>s (<300s rigoroso preserved)
+
+### [4] R7 SAGRADA tenant_id grep N queries
+✅ PASS — grep mostra `WHERE tenant_id = $1` em todas N queries novas
+
+### [5] <Check específico fase>
+✅/❌/⏸ <evidência>
+
+### [N] Smoke browser obrigatório humano (se fase frontend)
+✅ Humano confirmou OK — `<descrição do que validou>`
+
+## Patterns canonical cumulative cravados runtime
+
+| Pattern | Aplicação |
+|---|---|
+| ADR-NNN <descrição> | <X>ª aplicação cumulative |
+| Pre-commit hook Layer-1+2 | <X>ª aplicação cumulative |
+
+## Patterns novel Sprint {{SPRINT}} Fase {{FASE}}
+
+| Pattern | Categoria |
+|---|---|
+| <Novo pattern descoberto> | 1ª aplicação NOVO |
+
+## Wall-clock chain (regressão de performance)
+
+| Marco | Wall-clock |
+|---|---|
+| Baseline | 600s |
+| Spike <X> | 389s |
+| Fase {{FASE-1}} QA | 213s |
+| Fase {{FASE}} QA | <X>s |
+
+## Dívidas detectadas
+
+- **O-S{{SPRINT}}.{{FASE}}-{{N}}**: <descrição> (severidade <baixa/média/alta>)
+- **Carryover**: <dívidas pré-existentes ainda em aberto>
+
+## Próximo
+
+Rev marca `=== FASE {{FASE}} 100% FECHADA + LIBERADO FASE {{FASE+1}} ===` → Orch fanout Impl Fase {{FASE+1}}.
+
+=== HANDOFF QA → REVISOR ===

@@ -1,0 +1,73 @@
+---
+sprint: {{SPRINT}}
+fase: {{FASE}}
+seq: 03
+from: qa
+to: implementador
+marker: BUG ENCONTRADO PELO QA
+timestamp: {{ISO_8601}}
+branch: feature/sprint-{{SPRINT}}-{{SLUG}}
+commits: [{{COMMIT_HASHES}}]
+veredito: RECUSADO — fix mecânico {{TIPO_FIX}}
+re_cascata: obrigatório após fix
+---
+
+# 🚨 BUG ENCONTRADO PELO QA — Sprint {{SPRINT}} Fase {{FASE}}
+
+> **N/M verde** + **K BUG(s) bloqueante(s)** — descritivo Impl fix abaixo.
+> Re-cascata após commit fix antes Rev marcar FASE FECHADA.
+
+## Veredito
+
+**RECUSADO** com fix preciso documentado.
+
+## Evidências cascata N itens
+
+| # | Item | Status |
+|---|---|---|
+| [1] | <Item 1> | ✅ |
+| [2] | <Item 2> | ✅ |
+| [N] | <Item bloqueante> | ❌ <descrição> |
+
+## 🐛 BUG bloqueante: <título>
+
+### Reproduzir
+
+```bash
+$ <comando exato>
+```
+
+Output esperado:
+```
+<output esperado>
+```
+
+Output real:
+```
+<output real com erro>
+```
+
+### Fix proposto
+
+**Local**: `<file path>:<line number>`
+
+**Diff sugerido em prosa**:
+- Linha X: trocar `<antes>` por `<depois>`
+- Adicionar import `<pacote>` no topo
+
+**Comando de fix mecânico** (se aplicável):
+```bash
+$ gofmt -w <file>
+$ <comando que aplicaria o fix>
+```
+
+## Workflow continuação
+
+1. Impl arruma + handoff novo commit
+2. Rev re-aprova retroativo
+3. QA re-roda cascata items afetados
+4. `=== HANDOFF QA → REVISOR ===`
+5. Rev marca `=== FASE {{FASE}} 100% FECHADA ===`
+6. Impl Fase {{FASE+1}}
+
+=== BUG ENCONTRADO PELO QA ===

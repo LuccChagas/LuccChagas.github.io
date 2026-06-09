@@ -1,0 +1,77 @@
+---
+sprint: {{SPRINT}}
+fase: {{FASE}}
+seq: 02
+from: revisor
+to: qa
+marker: HEADS UP QA + QA TOQUE AUTORIZADO
+timestamp: {{ISO_8601}}
+branch: feature/sprint-{{SPRINT}}-{{SLUG}}
+commit: {{COMMIT_HASH}}
+---
+
+# Parecer Sprint {{SPRINT}} Fase {{FASE}} — <título>
+
+## Veredito
+
+**APROVADO ✅** em <N> dimensões.
+
+## Dimensões validadas
+
+### (A) <Dimensão 1>
+
+| Validação | Status |
+|---|---|
+| <Check específico> | ✅ <evidência: grep result, file:line> |
+
+### (B) <Dimensão 2>
+
+...
+
+## Concerns aceitos como não-issues
+
+1. **<Concern>**: <Justificativa por que aceitei como não-issue>
+
+## Patterns reuse cumulative
+
+| # | Pattern | Origem | Aplicação fase atual |
+|---|---|---|---|
+| {{N}} | <Pattern> | Sprint X Fase Y | <aplicação cumulative> |
+
+## Próximo passo — RE-CASCATA QA OBRIGATÓRIA
+
+=== HEADS UP QA + QA TOQUE AUTORIZADO ===
+
+## Descritivo QA cascata (orch fanout 1-linha)
+
+```
+=== CASCATA QA Sprint {{SPRINT}} Fase {{FASE}} ===
+[1] Static checks build + lint + gofmt clean
+[2] G* gate-check tests isolated
+[3] Integration full regression cumulative
+[4] R7 SAGRADA tenant_id grep N queries novas
+[5] <Check específico fase>
+[6] <Check específico fase>
+[7] <Smoke runtime opcional>
+[8] <Smoke browser obrigatório humano se fase frontend>
+[9] Patterns reuse cumulative validation
+[10] <Outros>
+```
+
+## Descritivo Fase {{FASE+1}} PRÉ-PREPARADO (orch fanout após QA APROVADO)
+
+```
+=== TOQUE AUTORIZADO Sprint {{SPRINT}} Fase {{FASE+1}} ===
+
+Escopo: <O que vai ser implementado>
+
+ARCH.md seções: <Referências>
+
+Decisões cravadas humano: <D1, D2, etc>
+
+Patterns reuse esperados: <Lista>
+
+Smoke browser pós-merge: <Se aplicável>
+```
+
+=== HEADS UP QA + QA TOQUE AUTORIZADO ===

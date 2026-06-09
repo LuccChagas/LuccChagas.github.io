@@ -1,0 +1,203 @@
+# CLAUDE.md
+
+> **Guia obrigatório pra agentes IA trabalhando neste repo.**
+> Leia este arquivo primeiro, sempre, antes de qualquer outra coisa.
+
+---
+
+## 1. O que é o {{PROJECT_NAME}}
+
+<Descrição do projeto: domínio, problema central que resolve, cliente/usuário fundador, estrutura legal se aplicável.>
+
+---
+
+## 2. Documentos obrigatórios (leia nesta ordem)
+
+1. **`ARCHITECTURE.md`** — fonte da verdade técnica completa. Tem schema, endpoints, decisões, riscos.
+2. **`IMPLEMENTATION_ORDER.md`** — mapa de leitura por sprint. Te diz o que importa AGORA.
+3. Este `CLAUDE.md` — convenções operacionais do repo.
+
+⚠ **Quando houver conflito, `ARCHITECTURE.md` ganha sobre tudo.**
+
+---
+
+## 3. Os pilares do produto (NÃO-NEGOCIÁVEIS)
+
+<Lista dos pilares macro do produto. Cada pilar é uma "vertical" do roadmap.>
+
+1. <Pilar 1>
+2. <Pilar 2>
+...
+
+Se sua mudança não serve a um pilar, pergunte ao humano antes de implementar.
+
+---
+
+## 4. Stack — não negocie
+
+```
+Backend:    <linguagem + framework + DB + queue>
+Frontend:   <linguagem + framework + bundler>
+Desktop:    <se aplicável>
+Landing:    <se aplicável>
+Infra:      <provider + orchestrator>
+Pagamento:  <provider + interface abstrata se aplicável>
+```
+
+**Proibido sem aprovação:**
+- <Patterns que o projeto baniu — ORM se você usa query builder, UUID v4 se você usa ULID, float pra valor monetário, schema-per-tenant, etc>
+
+---
+
+## 5. Convenções de código
+
+### Estrutura de pastas
+
+```
+<árvore da estrutura canonical do projeto — apps/api/internal/{domain,usecase,interfaces,infrastructure}/ etc>
+```
+
+### Naming
+
+| Tipo | Convenção | Exemplo |
+|---|---|---|
+| Package | snake_case | `customer_segment` |
+| Arquivo | snake_case | `order_repository.go` |
+| Tipo público | PascalCase | `OrderRepository` |
+| Interface | PascalCase, sufixo Repository/Service | `OrderRepository` |
+| Função | camelCase (interna) / PascalCase (pública) | `findByTenant` / `FindByTenant` |
+| Constante | PascalCase | `OrderStatusReceived` |
+| Variável | camelCase | `tenantID` |
+
+### Erros
+
+- **NUNCA** usar `panic` em produção
+- **SEMPRE** wrappar com `fmt.Errorf("contexto: %w", err)`
+- Erros de domínio são tipos, não strings
+- Handler HTTP nunca retorna detalhes do erro pro cliente em produção
+
+### Logging
+
+- `slog` structured logging
+- Nunca logar dado sensível (telefone, email, conteúdo de pedido)
+
+### Testes
+
+- `*_test.go` no mesmo pacote
+- Tabela-driven sempre que possível
+- Nome do teste: `Test{Tipo}_{Cenário}`
+
+---
+
+## 6. Multi-tenancy / Defense in depth — REGRAS SAGRADAS
+
+<Liste invariants críticos do projeto. Exemplo de `tenant_id` em toda query:>
+
+⚠ **Toda query SQL que toca tabela com `tenant_id` DEVE incluir `WHERE tenant_id = $1`.**
+
+Esquecer isso = vazamento de dados entre clientes = bug catastrófico.
+
+---
+
+## 7. Convenções de Git
+
+### Branches
+- `main` — produção, branch protegida
+- `feature/sprint-{N}-{slug}` — trabalho de sprint
+- `fix/{issue-number}-{slug}` — bug fix
+- `chore/{slug}` — refactor, deps update, docs
+
+### Commits
+Formato: **Conventional Commits**
+
+```
+feat(order): add cancel endpoint
+fix(inventory): correct stock baixa for X channel
+chore(deps): upgrade Y to vN.M
+docs(architecture): add ADR-NNN about ...
+refactor(payment): extract provider interface
+test(loyalty): cover stamp expiration cases
+```
+
+Mensagem em **inglês**, descrição em <idioma do projeto> se precisar contexto.
+
+### Pull Requests
+- Título descritivo (vira mensagem do squash merge)
+- Descrição com: O que muda, Por que, Como testar, Sprint, Pilar afetado
+- Tamanho máximo: **500 linhas de código** (excluindo migrations/lock files)
+- Revisor humano tem que aprovar antes do merge
+- CI tem que estar verde
+
+---
+
+## 8. Multi-agent workflow
+
+Este repo é trabalhado com 4 instâncias do Claude Code rodando simultaneamente:
+
+- **Surface 4 — Implementador**: escreve o código
+- **Surface 1 — Revisor**: valida arquitetura sem rodar tests
+- **Surface 3 — QA**: roda cascata de checks
+- **Surface 2 — Orchestrator**: cola entre os 3
+
+Detalhes do fluxo: `~/.claude/skills/multi-agent-dev-workflow/SKILL.md`.
+
+Memórias canônicas (gatilhos, precedentes, protocolos) em `~/.claude/projects/<project-dir-mangled>/memory/`.
+
+### Regras pra agentes neste fluxo
+
+- **Implementador** nunca commita sem ter ido buscar contexto no `ARCHITECTURE.md` da seção referenciada em `IMPLEMENTATION_ORDER.md`
+- **Revisor** SEMPRE valida invariants críticos (tenant_id em queries, sem ORM, sem float pra valor, etc)
+- **QA** SEMPRE adiciona ao menos 1 teste por endpoint novo + roda cascata completa antes de dar OK
+- Qualquer um pode chamar pausa via mensagem "PAUSE: {motivo}"
+
+---
+
+## 9. O que pedir antes de fazer
+
+### SEMPRE pergunta antes de:
+- Adicionar nova dependência
+- Criar nova tabela que não está em `ARCHITECTURE.md`
+- Mudar schema de tabela existente (adicionar coluna ok, mudar tipo NÃO)
+- Criar novo serviço externo
+- Mudar provider de algo
+
+### Pode fazer sem perguntar:
+- Adicionar handlers/usecases/repos seguindo padrão existente
+- Refatorar dentro do mesmo arquivo
+- Adicionar testes
+- Atualizar comentários
+- Corrigir bugs óbvios (com explicação no commit)
+
+---
+
+## 10. Política de segurança
+
+- Credenciais **nunca** em código — só em `.env` local + secrets do CI
+- `.env` no `.gitignore` — `.env.example` no repo com placeholders
+- Logs **nunca** contêm dado sensível
+- HTTPS sempre — em dev local também
+- Senha de usuário: hash forte (bcrypt cost ≥12)
+
+---
+
+## 11. Como adicionar nova feature
+
+1. **Lê `IMPLEMENTATION_ORDER.md`** — confirma que a feature pertence à sprint atual
+2. **Lê seção do `ARCHITECTURE.md`** referenciada
+3. **Cria branch** `feature/sprint-{N}-{slug}`
+4. **Implementa** seguindo padrões deste documento
+5. **Testa** local + adiciona test case
+6. **PR pequeno** (max 500 LOC) com descrição completa
+7. Espera review humano + CI verde
+8. Merge squash
+
+---
+
+## 12. Contato (em caso de dúvida)
+
+- Dono do projeto: <Nome>
+- <Outros stakeholders>
+
+---
+
+**Última atualização**: <data>.
